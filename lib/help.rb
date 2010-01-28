@@ -17,6 +17,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
-Heroku::Command::Help.group('Plugins') do |group|
+Heroku::Command::Help.group('Herocutter Plugins') do |group|
+  group.command 'plugins:install <plugin name>',        'install the plugin from herocutter'
   group.command 'plugins:push [<git_uri>]',     'push plugin up to herocutter'
 end
