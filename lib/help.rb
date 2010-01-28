@@ -17,10 +17,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
-begin
-  require 'restclient'
-rescue LoadError
-  raise 'restclient gem is missing.  Please install restclient: gem install restclient'
+Heroku::Command::Help.group('Plugins') do |group|
+  group.command 'plugins:push [<git_uri>]',     'push plugin up to herocutter'
 end
-require File.dirname(__FILE__) + '/lib/heroku_herocutter'
-require File.dirname(__FILE__) + '/lib/help'
