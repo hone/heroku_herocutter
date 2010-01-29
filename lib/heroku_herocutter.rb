@@ -79,7 +79,8 @@ module Heroku::Command
     # return the uri if found on herocutter
     def fetch_git_uri(name, herocutter_url = HEROCUTTER_URL)
       begin
-        json = JSON.parse(RestClient.get("#{herocutter_url}/plugins/#{name}.json"))
+        response = RestClient.get("#{herocutter_url}/api/v1/plugins/#{name}.json")
+        json = JSON.parse(response)
       rescue
         return name
       end
