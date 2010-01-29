@@ -52,8 +52,16 @@ module Heroku::Command
         github_uri_rewrite!(uri)
       end
       if uri and not uri.empty?
-        response = JSON.parse(RestClient.post("#{HEROCUTTER_URL}/plugins", :api_key => yaml['api_key'], :plugin => {:uri => uri, :name => name}, :format => 'json'))
-        if response and response['error']
+        response = RestClient.post("#{HEROCUTTER_URL}/api/v1/plugins",
+          {
+            :api_key => yaml['api_key'],
+            :plugin => {:uri => uri, :name => name},
+            :format => 'json'
+          },
+          {"Authorization" => yaml['api_key'] }
+        )
+        json = JSON.parse(response)
+        if json and json['error']
           push_plugin_error
         else
           display "pushed plugin with uri: #{uri}"
