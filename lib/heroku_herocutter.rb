@@ -74,6 +74,27 @@ module Heroku::Command
       uri
     end
 
+    def list_with_herocutter
+      if args.first == '-r'
+        display ""
+        display "*** REMOTE PLUGINS ***"
+        display ""
+        response = RestClient.get("#{HEROCUTTER_URL}/api/v1/plugins", :format => 'json')
+        json = JSON.parse(response)
+        json.each do |json_plugin|
+          display json_plugin['plugin']['name']
+        end
+      else
+        display ""
+        display "*** LOCAL PLUGINS ***"
+        display ""
+        list_without_herocutter
+      end
+    end
+
+    alias_method :list_without_herocutter, :list
+    alias_method :list, :list_with_herocutter
+
     private
     # determine if they passed in a plugin name or uri
     # return the uri if found on herocutter
