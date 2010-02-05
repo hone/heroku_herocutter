@@ -50,8 +50,7 @@ JSON
 JSON
         @plugin = Heroku::Plugin.new(@git_uri)
         stub(Heroku::Plugin).new(@git_uri) { @plugin }
-        stub(@plugin).system("git init > /dev/null 2>&1") { true } 
-        stub(@plugin).system("git pull --depth 1 #{@git_uri}  > /dev/null 2>&1") { true }
+        stub(@plugin).system(anything) { true }
       end
 
       it "should fetch the git uri" do
@@ -75,7 +74,7 @@ JSON
         end
 
         it "should use the git uri found" do
-          mock(@plugin).system("git pull --depth 1 #{@git_uri}  > /dev/null 2>&1") { true }
+          mock(Heroku::Plugin).new(@git_uri) { @plugin }
           install_command
         end
       end
