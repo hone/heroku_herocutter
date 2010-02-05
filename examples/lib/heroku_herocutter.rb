@@ -15,10 +15,9 @@ describe Heroku::Command::Plugins do
       $:.include?("#{@herocutter_plugin_path}/lib").should be_true
     end
 
-    # don't know how to mock out load
-    it "should load the init file", :pending => true do
+    it "should load the init file" do
       init_file = @herocutter_plugin_path + "/init.rb"
-      stub(Kernel).load(init_file)
+      stub(Heroku::Plugin).load(init_file)
       Heroku::Plugin.load!
     end
 
