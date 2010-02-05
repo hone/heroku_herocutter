@@ -63,7 +63,8 @@ JSON
         end
 
         # waiting on refactoring of I/O in heroku gem
-        it "should display plugin is installed", :pending => true do
+        it "should display plugin is installed" do
+          mock.instance_of(Heroku::Command::Plugins).display(/\w+ installed/)
           install_command
         end
 
