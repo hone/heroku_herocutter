@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + "/../example_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Heroku::Command::Plugins do
   describe "on plugin load" do
@@ -31,7 +31,7 @@ describe Heroku::Command::Plugins do
         @git_uri = "git://github.com/hone/new_plugin.git"
         @error_response = <<JSON
 {
-  "error": "No plugin of that name found." 
+  "error": "No plugin of that name found."
 }
 JSON
         @success_response = <<JSON
@@ -71,6 +71,25 @@ JSON
           mock(Heroku::Plugin).new(@git_uri) { @plugin }
           install_command
         end
+      end
+
+      describe "when the git fetch is unsuccessful" do
+        before(:each) do
+          stub(RestClient).get(anything) { @error_resonse }
+        end
+
+        it "should pass the name/git uri passed through" do
+          mock(Heroku::Plugin).new(@plugin_name) { @plugin }
+
+          install_command
+        end
+
+        it "should install the plugin" do
+          mock.instance_of(Heroku::Command::Plugins).install
+
+          install_command
+        end
+
       end
     end # install
   end # load!
