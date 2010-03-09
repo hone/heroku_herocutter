@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
+require 'yaml'
 
 describe Heroku::Command::Plugins do
   describe "on plugin load" do
@@ -92,5 +93,53 @@ JSON
 
       end
     end # install
+
+    describe "on plugin push" do
+      def push_command(uri = nil, name = nil)
+        Heroku::Command.run("plugins:push", [uri, name])
+      end
+
+      before(:each) do
+        @uri = "git://github.com/hone/heroku_herocutter.git"
+      end
+
+      describe "YAML loads successfully" do
+        before(:each) do
+          @sandbox = @herocutter_plugin_path + "/spec/tmp"
+          if File.exist?(@sandbox)
+            FileUtils.rm_rf(@sandbox)
+          end
+          FileUtils.mkdir_p(@sandbox)
+
+          @config_file = @sandbox + "/herocutter"
+          File.open(@config_file, 'w') do |file|
+            YAML.dump({'api_key' => '4f104e7891b31d4ac004677c9dfd0ac5'}, file)
+          end
+
+          stub.instance_of(Heroku::Command::Plugins).herocutter_file { @config_file }
+        end
+
+        after(:each) do
+          FileUtils.rm_rf(@sandbox)
+        end
+
+        it "should display the plugin pushed and the uri" do
+          mock.instance_of(Heroku::Command::Plugin).display("pushed plugin with uri: #{@uri}")
+
+          push_command(@uri)
+        end
+      end
+
+      describe "YAML load error" do
+        before(:each) do
+          stub(YAML).load_file { raise Errno::ENOENT }
+        end
+
+        it "should display error" do
+          mock.instance_of(Heroku::Command::Plugins).error(anything)
+          push_command(@uri)
+        end
+      end
+    end
   end # load!
 end

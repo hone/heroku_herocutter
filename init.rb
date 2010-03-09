@@ -22,5 +22,6 @@ begin
 rescue LoadError
   raise 'restclient gem is missing.  Please install restclient: gem install restclient'
 end
+require 'yaml'
 require File.dirname(__FILE__) + '/lib/heroku_herocutter'
 require File.dirname(__FILE__) + '/lib/help'
