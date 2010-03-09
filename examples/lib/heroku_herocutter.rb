@@ -62,14 +62,8 @@ JSON
           stub(RestClient).get(anything) { @success_response }
         end
 
-        # waiting on refactoring of I/O in heroku gem
-        it "should display plugin is installed" do
-          mock.instance_of(Heroku::Command::Plugins).display(/\w+ installed/)
-          install_command
-        end
-
         it "should install the plugin" do
-          mock(@plugin).install { true }
+          mock.instance_of(Heroku::Command::Plugins).install
           install_command
         end
 
