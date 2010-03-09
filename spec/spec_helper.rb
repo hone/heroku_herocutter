@@ -11,7 +11,8 @@ def not_in_editor?
 end
 
 Rspec.configure do |c|
-#   c.filter_run :focused => true
+  c.run_all_when_everything_filtered = true
+  c.filter_run :focused => true
   c.alias_example_to :fit, :focused => true
   c.color_enabled = not_in_editor?
   c.mock_with :rr
