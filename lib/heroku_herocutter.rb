@@ -49,8 +49,9 @@ module Heroku::Command
 
       if uri.nil?
         uri = prepare_uri_from_git_origin
-        github_uri_rewrite!(uri)
       end
+      github_uri_rewrite!(uri)
+
       if uri and not uri.empty?
         response = RestClient.post("#{HEROCUTTER_URL}/api/v1/plugins",
           {

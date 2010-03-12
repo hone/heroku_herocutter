@@ -103,7 +103,7 @@ JSON
         @uri = "git://github.com/hone/heroku_herocutter.git"
       end
 
-      describe "YAML loads successfully" do
+      describe "when YAML loads successfully" do
         before(:each) do
           @sandbox = @herocutter_plugin_path + "/spec/tmp"
           if File.exist?(@sandbox)
@@ -123,10 +123,79 @@ JSON
           FileUtils.rm_rf(@sandbox)
         end
 
-        it "should display the plugin pushed and the uri" do
-          mock.instance_of(Heroku::Command::Plugin).display("pushed plugin with uri: #{@uri}")
+        describe "and when the response posts successfully" do
+          before(:each) do
 
-          push_command(@uri)
+            @git_uri = "git://github.com/hone/new_plugin.git"
+            @success_response = <<JSON
+{
+  "plugin": {
+      "name": "new_plugin",
+      "uri": "#{@git_uri}",
+      "updated_at": "2010-01-28T07:10:30Z",
+      "id": 11,
+      "description": "A new plugin",
+      "downloads_count": 1,
+      "created_at": "2010-01-28T07:07:55Z"
+  }
+}
+JSON
+            stub(RestClient).post(anything, anything, anything) { @success_response }
+          end
+
+          it "should display the plugin pushed and the uri" do
+            mock.instance_of(Heroku::Command::Plugins).display("pushed plugin with uri: #{@uri}")
+
+            push_command(@uri)
+          end
+
+          it "should pass the name and uri in the post" do
+            name = "new plugin"
+            mock(RestClient).post(anything, hash_including(:plugin => {:uri => @uri, :name => name }), anything) { @success_response }
+
+            push_command(@uri, "new plugin")
+          end
+
+          it "should rewrite github uris" do
+            mock(RestClient).post(anything,
+                                  hash_including(:plugin => {:uri  => "git://github.com/hone/new_plugin.git",
+                                                             :name => "new plugin" }),
+                                  anything) { @success_response }
+
+            push_command("git@github.com:hone/new_plugin.git", "new plugin")
+          end
+
+          describe "and when the uri is not passed in" do
+            before(:each) do
+              @git_uri = "git@heroku.com:hone/new_plugin.git"
+              @git_remote_show_origin = "  URL: #{@git_uri}"
+              stub.instance_of(Heroku::Command::Plugins).git_remote_show_origin { @git_remote_show_origin }
+            end
+
+            it "should generate the uri from the git origin remote" do
+              name = "new plugin"
+              mock(RestClient).post(anything, hash_including(:plugin => {:uri => @git_uri, :name => name }), anything) { @success_response }
+              push_command(nil, "new plugin")
+            end
+          end
+        end
+
+        describe "and when the response returns an error" do
+          before(:each) do
+            @error_response = <<JSON
+{
+  "error": "Could not create plugin"
+}
+JSON
+
+            stub(RestClient).post(anything, anything, anything) { @error_response }
+          end
+
+          it "should show an error" do
+            mock.instance_of(Heroku::Command::Plugins).error(is_a(String))
+
+            push_command(@uri)
+          end
         end
       end
 
