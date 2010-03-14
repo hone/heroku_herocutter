@@ -60,7 +60,7 @@ module Heroku::Command
             :format => 'json'
           },
           {"Authorization" => yaml['api_key'] }
-        )
+        ).to_s
         json = JSON.parse(response)
         if json and json['error']
           push_plugin_error
@@ -80,7 +80,7 @@ module Heroku::Command
         display ""
         display "*** REMOTE PLUGINS ***"
         display ""
-        response = RestClient.get("#{HEROCUTTER_URL}/api/v1/plugins", :format => 'json')
+        response = RestClient.get("#{HEROCUTTER_URL}/api/v1/plugins", :format => 'json').to_s
         json = JSON.parse(response)
         json.each do |json_plugin|
           display json_plugin['plugin']['name']
@@ -101,7 +101,7 @@ module Heroku::Command
     # return the uri if found on herocutter
     def fetch_git_uri(name, herocutter_url = HEROCUTTER_URL)
       begin
-        response = RestClient.get("#{herocutter_url}/api/v1/plugins/#{name}.json")
+        response = RestClient.get("#{herocutter_url}/api/v1/plugins/#{name}.json").to_s
         json = JSON.parse(response)
       rescue
         return name
