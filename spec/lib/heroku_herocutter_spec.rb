@@ -210,5 +210,73 @@ JSON
         end
       end
     end
+
+    describe "on plugin list" do
+      def list_command
+        Heroku::Command.run("plugins:list", [@option])
+      end
+
+      describe "when listing remote plugins" do
+        before(:each) do
+          @option = "-r"
+          @plugins = %w(colorize_console herocutter herogit)
+          @success_response = <<JSON
+[
+    {
+        "plugin": {
+            "name": "colorize_console",
+            "uri": "git://github.com/hone/heroku_colorize_console.git",
+            "updated_at": "2010-01-28T06:53:35Z",
+            "id": 1,
+            "description": "Plugin that provides color output using wirble ",
+            "downloads_count": 46,
+            "created_at": "2010-01-18T06:15:09Z"
+        }
+    },
+    {
+        "plugin": {
+            "name": "herocutter",
+            "uri": "git://github.com/hone/heroku_herocutter.git",
+            "updated_at": "2010-01-28T07:10:30Z",
+            "id": 11,
+            "description": "Provides extra heroku plugin functionality to work with Herocutter",
+            "downloads_count": 2,
+            "created_at": "2010-01-28T07:07:55Z"
+        }
+    },
+    {
+        "plugin": {
+            "name": "herogit",
+            "uri": "git://github.com/jbarnette/herogit.git",
+            "updated_at": "2010-03-01T23:03:30Z",
+            "id": 14,
+            "description": "Pull credentials and current app info from your git config.",
+            "downloads_count": 4,
+            "created_at": "2010-03-01T23:02:58Z"
+        }
+    }
+]
+JSON
+        end
+
+        it "should query herocutter for plugins" do
+          mock(RestClient).get(anything, anything) { @success_response }
+
+          list_command
+        end
+      end
+
+      describe "when listing local plugins" do
+        before(:each) do
+          @option = nil
+        end
+
+        it "should call the original list method" do
+          mock.instance_of(Heroku::Command::Plugins).list_without_herocutter
+
+          list_command
+        end
+      end
+    end
   end # load!
 end
