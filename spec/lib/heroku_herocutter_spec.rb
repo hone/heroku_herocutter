@@ -79,7 +79,7 @@ JSON
           stub(RestClient).get(anything) { @error_resonse }
         end
 
-        it "should pass the name/git uri passed through" do
+        it "should pass the name/git uri through" do
           mock(Heroku::Plugin).new(@plugin_name) { @plugin }
 
           install_command
