@@ -213,7 +213,7 @@ JSON
 
     describe "on plugin list" do
       def list_command
-        Heroku::Command.run("plugins:list", [@option])
+        Heroku::Command.run("plugins", [@option])
       end
 
       describe "when listing remote plugins" do

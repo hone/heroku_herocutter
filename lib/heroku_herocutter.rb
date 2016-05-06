@@ -93,8 +93,8 @@ module Heroku::Command
       end
     end
 
-    alias_method :list_without_herocutter, :list
-    alias_method :list, :list_with_herocutter
+    alias_method :list_without_herocutter, :index
+    alias_method :index, :list_with_herocutter
 
     private
     # determine if they passed in a plugin name or uri
